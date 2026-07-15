@@ -16,7 +16,6 @@ type DaySteps struct {
 }
 
 func (ds *DaySteps) Parse(datastring string) (err error) {
-	// 1. Сразу отвергаем любые пробельные символы во всей строке
 	if strings.ContainsAny(datastring, " \t\r\n") {
 		return fmt.Errorf("в строке не должно быть пробелов или других пробельных символов")
 	}
@@ -33,27 +32,23 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 	stepsStr := parts[0]
 	durationStr := parts[1]
 
-	// 2. Валидация шагов: разрешаем опциональный '+' в начале, дальше только цифры
 	if stepsStr == "" {
 		return fmt.Errorf("отсутствует значение количества шагов")
 	}
 
 	i := 0
-	// Если первый символ '+' — пропускаем его
+	
 	if len(stepsStr) > 0 && stepsStr[0] == '+' {
 		i = 1
 	}
 
-	// После возможного '+' должны идти только цифры
-	for j := i; j < len(stepsStr); j++ {
+		for j := i; j < len(stepsStr); j++ {
 		r := stepsStr[j]
 		if r < '0' || r > '9' {
 			return fmt.Errorf("количество шагов должно содержать только цифры")
 		}
 	}
 
-	// Запрет ведущего нуля: "0123" — ошибка. "0" технически допустим синтаксически,
-	// но будет отвергнут проверкой steps <= 0 ниже.
 	if i == 0 && len(stepsStr) > 1 && stepsStr[0] == '0' {
 		return fmt.Errorf("недопустимый формат количества шагов: ведущий ноль")
 	}
@@ -72,7 +67,6 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 	}
 	ds.Steps = steps
 
-	// 3. Длительность: НЕ делаем TrimSpace — пробелы должны быть ошибкой
 	duration, err := time.ParseDuration(durationStr)
 	if err != nil {
 		return fmt.Errorf("ошибка при парсинге длительности: %w", err)
